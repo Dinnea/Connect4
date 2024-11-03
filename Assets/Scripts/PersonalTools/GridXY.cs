@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Threading;
+using Personal.Utilities;
+
 namespace Personal.GridFramework
 {
     /// <summary>
@@ -15,10 +18,17 @@ namespace Personal.GridFramework
         int _columns;
         int _rows;
         float _cellSize;
-        private Vector3 _origin;
-        private Vector3 _offset;
+        Vector3 _origin;
+        Vector3 _offset;
 
+        
         TObject[,] _gridArray;
+
+        public bool debug = true;
+        TextMesh[,] _debugTextArray;
+
+        Action<Vector2Int> OnObjectChanged;
+
         /// <summary>
         /// Horizontal grid, set on the XZ dimensions. Can contain anything. 
         /// Default object: first int = x, 2nd int = y, TObject = type of object the grid contains
@@ -36,17 +46,48 @@ namespace Personal.GridFramework
             _cellSize = cellSize;
             _origin = origin;
 
-            _offset = new Vector3(_cellSize, 0, _cellSize) * 0.5f; //origin of cells set to middle
+            _offset = new Vector3(_cellSize, _cellSize, 0) * 0.5f; //origin of cells set to middle
 
             _gridArray = new TObject[columns, rows];
             for (int x = 0; x < _gridArray.GetLength(0); x++)
             {
-                for (int z = 0; z < _gridArray.GetLength(1); z++)
+                for (int y = 0; y < _gridArray.GetLength(1); y++)
                 {
 
-                    _gridArray[x, z] = defaultObject(this, x, z);
+                    _gridArray[x, y] = defaultObject(this, x, y);
                 }
             }
+
+            if (debug) 
+            {
+                _debugTextArray = new TextMesh[columns, rows];
+                showDebug(_columns, _rows);
+                OnObjectChanged += changeDebugText;
+            } 
+        }
+
+        /// <summary>
+        /// Show the debug gizmos; XZ coords, grid lines, name of the grid object content. 
+        /// </summary>
+        /// <param name="columns"></param>
+        /// <param name="rows"></param>
+        private void showDebug(int columns, int rows)
+        {
+            for (int x = 0; x < _gridArray.GetLength(0); x++)
+            {
+                for (int y = 0; y < _gridArray.GetLength(1); y++)
+                {
+
+                    Debug.DrawLine(GridToWorldPosition(x, y), GridToWorldPosition(x, y + 1), Color.white, 1000f);
+                    Debug.DrawLine(GridToWorldPosition(x, y), GridToWorldPosition(x + 1, y), Color.white, 1000f);
+                    _debugTextArray[x, y] = TextTools.CreateTextInWorld(_gridArray[x, y]?.ToString(), null, GridToWorldPosition(x, y) + _offset, 
+                                                                        5, Color.white, new Vector3(0, 0, 0), TextAnchor.MiddleCenter); //TODO: these variables should be changeable in editor
+                }
+            }
+            Debug.DrawLine(GridToWorldPosition(0, rows), GridToWorldPosition(columns, rows), Color.white, 1000f);
+            Debug.DrawLine(GridToWorldPosition(columns, 0), GridToWorldPosition(columns, rows), Color.white, 1000f);
+
+            
         }
 
         public Vector3 GetCellOffset()
@@ -82,7 +123,7 @@ namespace Personal.GridFramework
 
         public bool CheckInBounds(int x, int y)
         {
-            return ((x >= 0 && y >= 0) && (x < _columns && y < _rows));
+            return ((x >= 0 && y >= 0) && (x <= _columns && y <= _rows));
         }
 
         /// <summary>
@@ -93,9 +134,10 @@ namespace Personal.GridFramework
         /// <returns>World position at location column x, row z.</returns>
         public Vector3 GridToWorldPosition(int x, int y)
         {
-            if (CheckInBounds(x, y)) return new Vector3(x, y, 0) * _cellSize + _origin;
+            Debug.Log(CheckInBounds(x, y));
+            if (CheckInBounds(x, y)) return new Vector3(x, y) * _cellSize + _origin;
 
-            else return new Vector3(-1, 0, -1);
+            else return new Vector3(-1, -1, -1);
         }
         /// <summary>
         /// Converts world postition to grid coords.
@@ -117,13 +159,14 @@ namespace Personal.GridFramework
         /// Set grid object on grid using grid coordinates
         /// </summary>
         /// <param name="x"></param>
-        /// <param name="z"></param>
+        /// <param name="y"></param>
         /// <param name="value"></param>
-        public void SetGridObject(int x, int z, TObject value) //
+        public void SetCellContent(int x, int y, TObject value) //
         {
-            if (CheckInBounds(x, z))
+            if (CheckInBounds(x, y))
             {
-                _gridArray[x, z] = value;
+                _gridArray[x, y] = value;
+                OnObjectChanged?.Invoke(new Vector2Int(x, y));
             }
         }
         /// <summary>
@@ -131,10 +174,10 @@ namespace Personal.GridFramework
         /// </summary>
         /// <param name="worldPosition"></param>
         /// <param name="value"></param>
-        public void SetGridObject(Vector3 worldPosition, TObject value) //set value based on world position
+        public void SetCellContent(Vector3 worldPosition, TObject value) //set value based on world position
         {
             Vector2Int coords = WorldToGridPostion(worldPosition);
-            SetGridObject(coords.x, coords.y, value);
+            SetCellContent(coords.x, coords.y, value);
         }
 
 
@@ -142,13 +185,13 @@ namespace Personal.GridFramework
         /// Find object on grid coords x, z. 
         /// </summary>
         /// <param name="x"></param>
-        /// <param name="z"></param>
+        /// <param name="y"></param>
         /// <returns></returns>
-        public TObject GetCellContent(int x, int z)
+        public TObject GetCellContent(int x, int y)
         {
-            if (CheckInBounds(x, z))
+            if (CheckInBounds(x, y))
             {
-                return _gridArray[x, z];
+                return _gridArray[x, y];
             }
             else return default;
         }
@@ -162,6 +205,11 @@ namespace Personal.GridFramework
         {
             Vector2Int gridCoords = WorldToGridPostion(worldPosition);
             return GetCellContent(gridCoords.x, gridCoords.y);
+        }
+
+        void changeDebugText(Vector2Int coordinates)
+        {
+            _debugTextArray[coordinates.x, coordinates.y].text = _gridArray[coordinates.x, coordinates.y].ToString();
         }
     }
 }
