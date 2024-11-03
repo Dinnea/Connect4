@@ -81,7 +81,7 @@ namespace Personal.GridFramework
                     Debug.DrawLine(GridToWorldPosition(x, y), GridToWorldPosition(x, y + 1), Color.white, 1000f);
                     Debug.DrawLine(GridToWorldPosition(x, y), GridToWorldPosition(x + 1, y), Color.white, 1000f);
                     _debugTextArray[x, y] = TextTools.CreateTextInWorld(_gridArray[x, y]?.ToString(), null, GridToWorldPosition(x, y) + _offset, 
-                                                                        5, Color.white, new Vector3(0, 0, 0), TextAnchor.MiddleCenter); //TODO: these variables should be changeable in editor
+                                                                        10, Color.white, new Vector3(0, 0, 0), TextAnchor.MiddleCenter); //TODO: these variables should be changeable in editor
                 }
             }
             Debug.DrawLine(GridToWorldPosition(0, rows), GridToWorldPosition(columns, rows), Color.white, 1000f);
