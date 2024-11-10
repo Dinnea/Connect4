@@ -134,7 +134,6 @@ namespace Personal.GridFramework
         /// <returns>World position at location column x, row z.</returns>
         public Vector3 GridToWorldPosition(int x, int y)
         {
-            Debug.Log(CheckInBounds(x, y));
             if (CheckInBounds(x, y)) return new Vector3(x, y) * _cellSize + _origin;
 
             else return new Vector3(-1, -1, -1);
