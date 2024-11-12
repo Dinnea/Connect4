@@ -11,6 +11,17 @@ public enum Token
     Enemy
 }
 
+public class MoveData
+{
+    public Token token;
+    public Vector2Int boardCoords;
+    public MoveData(Token token, Vector2Int coords)
+    {
+        this.token = token;
+        boardCoords = coords;
+    }
+}
+
 public class GridController : MonoBehaviour
 {
     GridXY<Token> _board;
@@ -25,6 +36,7 @@ public class GridController : MonoBehaviour
     [SerializeField] float _cellSize = 2;
 
     public Action<Token> OnPlayerTurnChanged;
+    public Action<MoveData> OnTokenDropped;
     public Action<Token> OnWin;
 
     private void Start()
@@ -36,10 +48,12 @@ public class GridController : MonoBehaviour
     private void OnEnable()
     {
         Cursor.OnBoardClicked += DropToken;
+        OnTokenDropped += CheckForWin;
     }
     private void OnDisable()
     {
         Cursor.OnBoardClicked -= DropToken;
+        OnTokenDropped -= CheckForWin;
     }
 
     void InitializeBoard()
@@ -72,7 +86,9 @@ public class GridController : MonoBehaviour
                 _board.SetCellContent(newTokenCoords, currentPlayer); //Set the cell content to the right token.
 
                 //Check for win - no need to check the whole board every time, only the cells near the newly placed token.
-                CheckForWin(newTokenCoords);
+                OnTokenDropped?.Invoke(new MoveData(currentPlayer, newTokenCoords));
+                
+                //CheckForWin(newTokenCoords);
                 
 
                 /* Turn switching */
@@ -87,29 +103,20 @@ public class GridController : MonoBehaviour
     }
     /// <summary>
     /// Checks for win, starting from given token coordinates.
+    /// Runs veritcal, horizontal and diagonal checks.
     /// </summary>
-    /// <param name="tokenCoords"></param>
-
-    void CheckForWin(Vector2Int tokenCoords)
+    /// <param name="tokenCoords"> Point from which checking is started</param>
+    void CheckForWin(MoveData eventData)
     {
 
-        if ( CheckForHorizontalWin(tokenCoords) ||
-             CheckForVerticalWin(tokenCoords)   ||
-             CheckForDiagonalWin(tokenCoords))
+        if ( CheckForHorizontalWin(eventData.boardCoords) ||
+             CheckForVerticalWin(eventData.boardCoords)   ||
+             CheckForDiagonalWin(eventData.boardCoords))
         {
             Debug.Log(currentPlayer + " wins!");
             OnWin?.Invoke(currentPlayer);
         }
         else Debug.Log("No win reached.");
-
-
-        //diagonal win
-        //x+n, y+n
-        //x+n, y-n
-        //x-n, y+n
-        //x-n, y-n
-
-
     }
     bool CheckForVerticalWin(Vector2Int tokenCoords)
     {
@@ -342,5 +349,8 @@ public class GridController : MonoBehaviour
         return false;
     }
 
-    
+    public GridXY<Token> GetBoard()
+    {
+        return _board;
+    }
 }

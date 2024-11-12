@@ -144,6 +144,11 @@ namespace Personal.GridFramework
             else return new Vector3(-1, -1, -1);
         }
 
+        public Vector3 GridToWorldPosition(Vector2Int coords)
+        {
+            return GridToWorldPosition(coords.x, coords.y);
+        }
+
         /// <summary>
         /// Converts world postition to grid coords.
         /// </summary>
