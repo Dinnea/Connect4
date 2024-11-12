@@ -24,7 +24,7 @@ namespace Personal.GridFramework
         
         TObject[,] _gridArray;
 
-        public bool debug = true;
+        public bool debug = false;
         TextMesh[,] _debugTextArray;
 
         Action<Vector2Int> OnObjectChanged;

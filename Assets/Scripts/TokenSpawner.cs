@@ -2,11 +2,15 @@ using Personal.GridFramework;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class TokenSpawner : MonoBehaviour
 {
     [SerializeField] GameObject _playerToken;
     [SerializeField] GameObject _enemyToken;
+
+
+    [SerializeField] float _spawnedZOffset;
 
     GridController _gridController;
     GridXY<Token> _board;
@@ -14,6 +18,11 @@ public class TokenSpawner : MonoBehaviour
     private void Awake()
     {
         _gridController = GetComponent<GridController>();
+        
+    }
+
+    private void Start()
+    {
         _board = _gridController.GetBoard();
     }
     private void OnEnable()
@@ -40,8 +49,14 @@ public class TokenSpawner : MonoBehaviour
             Debug.LogError("Invalid token.");
         }
 
-        Vector3 targetLocation = _board.GridToWorldPosition(eventData.boardCoords) + _board.GetCellOffset();
+        //float step = _speed * Time.deltaTime;
 
+        Vector3 targetLocation = _board.GridToWorldPosition(eventData.boardCoords) + _board.GetCellOffset();
+        targetLocation = new Vector3(targetLocation.x, targetLocation.y, _spawnedZOffset);
+        //Vector3 spawnLocation = new Vector3(targetLocation.x, 60, targetLocation.z);
         GameObject newToken = Instantiate(toInstantiate, targetLocation, Quaternion.identity);
+        //newToken.transform.position = Vector3.MoveTowards(newToken.transform.position, targetLocation, step);
     }
+
+
 }
