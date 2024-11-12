@@ -78,14 +78,14 @@ namespace Personal.GridFramework
                 for (int y = 0; y < _gridArray.GetLength(1); y++)
                 {
 
-                    Debug.DrawLine(GridToWorldPosition(x, y), GridToWorldPosition(x, y + 1), Color.white, 1000f);
-                    Debug.DrawLine(GridToWorldPosition(x, y), GridToWorldPosition(x + 1, y), Color.white, 1000f);
+                    Debug.DrawLine(GridToWorldPosition(x, y, true), GridToWorldPosition(x, y + 1, true), Color.white, 1000f);
+                    Debug.DrawLine(GridToWorldPosition(x, y, true), GridToWorldPosition(x + 1, y, true), Color.white, 1000f);
                     _debugTextArray[x, y] = TextTools.CreateTextInWorld(_gridArray[x, y]?.ToString(), null, GridToWorldPosition(x, y) + _offset, 
                                                                         10, Color.white, new Vector3(0, 0, 0), TextAnchor.MiddleCenter); //TODO: these variables should be changeable in editor
                 }
             }
-            Debug.DrawLine(GridToWorldPosition(0, rows), GridToWorldPosition(columns, rows), Color.white, 1000f);
-            Debug.DrawLine(GridToWorldPosition(columns, 0), GridToWorldPosition(columns, rows), Color.white, 1000f);
+            Debug.DrawLine(GridToWorldPosition(0, rows, true), GridToWorldPosition(columns, rows, true), Color.white, 1000f);
+            Debug.DrawLine(GridToWorldPosition(columns, 0, true), GridToWorldPosition(columns, rows, true), Color.white, 1000f);
 
             
         }
@@ -123,7 +123,11 @@ namespace Personal.GridFramework
 
         public bool CheckInBounds(int x, int y)
         {
-            return ((x >= 0 && y >= 0) && (x <= _columns && y <= _rows));
+            return ((x >= 0 && y >= 0) && (x < _columns && y <_rows));
+        }
+        public bool CheckInBounds(Vector2Int coords)
+        {
+            return CheckInBounds(coords.x, coords.y);
         }
 
         /// <summary>
@@ -132,12 +136,14 @@ namespace Personal.GridFramework
         /// <param name="x"></param>
         /// <param name="z"></param>
         /// <returns>World position at location column x, row z.</returns>
-        public Vector3 GridToWorldPosition(int x, int y)
+        public Vector3 GridToWorldPosition(int x, int y, bool ignoreBounds = false)
         {
-            if (CheckInBounds(x, y)) return new Vector3(x, y) * _cellSize + _origin;
+
+            if (CheckInBounds(x, y) || ignoreBounds) return new Vector3(x, y) * _cellSize + _origin;
 
             else return new Vector3(-1, -1, -1);
         }
+
         /// <summary>
         /// Converts world postition to grid coords.
         /// </summary>
@@ -155,7 +161,7 @@ namespace Personal.GridFramework
         }
 
         /// <summary>
-        /// Set grid object on grid using grid coordinates
+        /// Set grid object on grid using grid coordinates, 2 in format
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -167,6 +173,15 @@ namespace Personal.GridFramework
                 _gridArray[x, y] = value;
                 OnObjectChanged?.Invoke(new Vector2Int(x, y));
             }
+        }
+        /// <summary>
+        /// Set grid object on grid using grid coordinates, Vector2Int format.
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="value"></param>
+        public void SetCellContent(Vector2Int coords, TObject value) //
+        {
+            SetCellContent(coords.x, coords.y, value);
         }
         /// <summary>
         /// Set grid object on grid using world position.
@@ -193,6 +208,11 @@ namespace Personal.GridFramework
                 return _gridArray[x, y];
             }
             else return default;
+        }
+
+        public TObject GetCellContent(Vector2Int coords)
+        {
+            return GetCellContent(coords.x, coords.y);
         }
 
         /// <summary>
