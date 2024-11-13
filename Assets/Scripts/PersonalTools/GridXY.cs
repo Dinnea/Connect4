@@ -144,9 +144,9 @@ namespace Personal.GridFramework
             else return new Vector3(-1, -1, -1);
         }
 
-        public Vector3 GridToWorldPosition(Vector2Int coords)
+        public Vector3 GridToWorldPosition(Vector2Int coords, bool ignoreBounds = false)
         {
-            return GridToWorldPosition(coords.x, coords.y);
+            return GridToWorldPosition(coords.x, coords.y, ignoreBounds);
         }
 
         /// <summary>
