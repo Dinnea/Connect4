@@ -29,7 +29,7 @@ public class MoveData
 /// <summary>
 /// Spawns the game board, you can get information about the board from here.
 /// </summary>
-public class Grid : MonoBehaviour
+public class GridComponent : MonoBehaviour
 {
     //Only one board in game, static board is easier to access.
     static GridXY<Token> _board;

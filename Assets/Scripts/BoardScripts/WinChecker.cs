@@ -18,7 +18,7 @@ public class WinChecker : MonoBehaviour
 
     private void Start()
     {
-        _board = Grid.GetBoard();
+        _board = GridComponent.GetBoard();
     }
 
     private void OnEnable()

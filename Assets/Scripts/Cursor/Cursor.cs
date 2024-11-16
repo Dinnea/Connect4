@@ -20,7 +20,7 @@ public class Cursor : MonoBehaviour
     GridXY<Token> _board;
     private void Start()
     {
-        _board = Grid.GetBoard();
+        _board = GridComponent.GetBoard();
     }
 
     private void Update()

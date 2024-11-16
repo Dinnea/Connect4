@@ -28,7 +28,7 @@ public class BoardController : MonoBehaviour
     }
     private void Start()
     {
-        _board = Grid.GetBoard();
+        _board = GridComponent.GetBoard();
         //lets subcribers know that first turn started 
         OnTurnStarted?.Invoke(currentPlayer);
 
