@@ -6,11 +6,33 @@ using System;
 using static UnityEngine.Rendering.DebugUI.Table;
 using UnityEditor;
 
+public enum Token
+{
+    Empty,
+    Player,
+    Enemy
+}
+
+/// <summary>
+/// Stores info about WHO has made a move and WHERE did the token land.
+/// </summary>
+public class MoveData
+{
+    public Token currentPlayer;
+    public Vector2Int tokenCoords;
+    public MoveData(Token currentPlayer, Vector2Int coords)
+    {
+        this.currentPlayer = currentPlayer;
+        tokenCoords = coords;
+    }
+}
+/// <summary>
+/// Spawns the game board, you can get information about the board from here.
+/// </summary>
 public class Grid : MonoBehaviour
 {
+    //Only one board in game, static board is easier to access.
     static GridXY<Token> _board;
-
-    
 
     [SerializeField] Vector2Int _dimensions = new Vector2Int(6, 6);
     [SerializeField] Vector3 _origin = Vector3.zero;
@@ -25,8 +47,6 @@ public class Grid : MonoBehaviour
         initializeBoard();
         
     }
-
-  
 
     /// <summary>
     /// Generates grid and spawns meshes to create a visual for grid. 1 mesh per cell.
@@ -83,10 +103,21 @@ public class Grid : MonoBehaviour
             }
     }
 
+    /// <summary>
+    /// Shortcut to only get the x coordinate on the board at given location.ss
+    /// </summary>
+    /// <param name="location"></param>
+    /// <returns></returns>
     int FindColumn(Vector3 location)
     {
         return _board.WorldToGridPostion(location).x;
     }
+
+    /// <summary>
+    /// Find the lowest cell in given column that is not yet taken up.
+    /// </summary>
+    /// <param name="column"></param>
+    /// <returns></returns>
     public static Vector2Int FindFirstFreeCellInColumn(int column)
     {
         for (int row = 0; row < _board.GetHeightInRows(); row++) //Go row by row starting at the bottom
@@ -99,7 +130,6 @@ public class Grid : MonoBehaviour
         }
         return new Vector2Int(column, -1);
     }
-
 
     public static GridXY<Token> GetBoard()
     {
