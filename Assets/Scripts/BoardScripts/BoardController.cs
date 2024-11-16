@@ -2,38 +2,49 @@ using Personal.GridFramework;
 using System;
 using UnityEngine;
 
-public class TokenSpawner : MonoBehaviour
+public class BoardController : MonoBehaviour
 {
     [SerializeField] GameObject _playerToken;
     [SerializeField] GameObject _enemyToken;
 
 
     [SerializeField] float _spawnedZOffset;
+    float _spawnedYLocation;
 
     GridXY<Token> _board;
     public static Action<MoveData> OnTokenDropped;
     public static Action OnTokenFailedToDrop;
     public static Action<Token> OnTurnStarted;
+
+    Cursor _cursor;
  
 
     //Denotes which token will be drop/which player's turn it is
     Token currentPlayer = Token.Player;
 
+    private void Awake()
+    {
+        _cursor = FindObjectOfType<Cursor>();
+    }
     private void Start()
     {
         _board = Grid.GetBoard();
         //lets subcribers know that first turn started 
         OnTurnStarted?.Invoke(currentPlayer);
+
+        
+
+
     }
     private void OnEnable()
     {
-        Cursor.OnBoardClicked += DropToken;
+        _cursor.OnBoardClicked += DropToken;
         OnTokenDropped += SpawnToken;
         
     }
     private void OnDisable()
     {
-        Cursor.OnBoardClicked -= DropToken;
+        _cursor.OnBoardClicked -= DropToken;
         OnTokenDropped -= SpawnToken;
     }
 
@@ -100,15 +111,18 @@ public class TokenSpawner : MonoBehaviour
                 Debug.LogError("Invalid token.");
             }
 
-            //float step = _speed * Time.deltaTime;
-
+            
+            //this is target destination of the tokens
             Vector3 targetLocation = _board.GridToWorldPosition(eventData.tokenCoords) + _board.GetCellOffset();
             targetLocation = new Vector3(targetLocation.x, targetLocation.y, _spawnedZOffset);
-            //Vector3 spawnLocation = new Vector3(targetLocation.x, 60, targetLocation.z);
-            GameObject newToken = Instantiate(toInstantiate, targetLocation, Quaternion.identity);
-            //newToken.transform.position = Vector3.MoveTowards(newToken.transform.position, targetLocation, step);
 
-            //new token needs a movement script that will move it to the targetLocation, will be spawned at spawn location isntead;
+            //This is from where the tokens spawn
+            _spawnedYLocation = _cursor.GetCursorLocation().y;
+            Vector3 spawnLocation = new Vector3(targetLocation.x, _spawnedYLocation, targetLocation.z);
+
+            //token spawned
+            GameObject newToken = Instantiate(toInstantiate, spawnLocation, Quaternion.identity);
+            newToken.GetComponent<TokenMovement>().SetTargetLocation(targetLocation);
         }
     }
 }

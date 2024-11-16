@@ -66,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 8900243439050407154, guid: 518098225ad5e9b4ab3a222908887fa0,
         type: 3}
       propertyPath: m_Name
-      value: Token 2(cube)
+      value: EnemyToken
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

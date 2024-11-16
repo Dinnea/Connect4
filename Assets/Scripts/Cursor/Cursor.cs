@@ -11,7 +11,7 @@ public class Cursor : MonoBehaviour
 {
     [SerializeField] LayerMask layer;
 
-    public static Action<Vector2Int> OnBoardClicked;
+    public Action<Vector2Int> OnBoardClicked;
     [SerializeField] float _cursorDepth;
     [SerializeField] float _cursorBoardGap = 1.2f;
     Vector3 _cursorLocation;
@@ -28,6 +28,16 @@ public class Cursor : MonoBehaviour
         MoveOnBoard();
     }
 
+    private void OnEnable()
+    {
+        WinChecker.OnWin += Disable;
+    }
+
+    private void OnDisable()
+    {
+        WinChecker.OnWin -= Disable;
+    }
+
     void MoveOnBoard()
     {
          _cursorLocation = VectorMath.GetMousePositionWorld(Camera.main, layer);
@@ -41,5 +51,15 @@ public class Cursor : MonoBehaviour
         {
             OnBoardClicked?.Invoke(cellCoords);
         }
+    }
+
+    public Vector3 GetCursorLocation()
+    {
+        return transform.position;
+    }
+
+    void Disable(Token player)
+    {
+        gameObject.SetActive(false);
     }
 }

@@ -15,11 +15,11 @@ public class CursorVisual : MonoBehaviour
 
     private void OnEnable()
     {
-        TokenSpawner.OnTurnStarted += SwitchTokenSkin;
+        BoardController.OnTurnStarted += SwitchTokenSkin;
     }
     private void OnDisable()
     {
-        TokenSpawner.OnTurnStarted -= SwitchTokenSkin;
+        BoardController.OnTurnStarted -= SwitchTokenSkin;
     }
 
     void SwitchTokenSkin(Token currentPlayer)

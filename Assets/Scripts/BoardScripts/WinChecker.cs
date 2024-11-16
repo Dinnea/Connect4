@@ -11,7 +11,7 @@ public class WinChecker : MonoBehaviour
 {
 
     int tokensToWin = 4;
-    public Action<Token> OnWin;
+    public static Action<Token> OnWin;
 
     GridXY<Token> _board;
 
@@ -23,12 +23,12 @@ public class WinChecker : MonoBehaviour
 
     private void OnEnable()
     {
-        TokenSpawner.OnTokenDropped += CheckForWin;
+        BoardController.OnTokenDropped += CheckForWin;
     }
 
     private void OnDisable()
     {
-        TokenSpawner.OnTokenDropped -= CheckForWin;
+        BoardController.OnTokenDropped -= CheckForWin;
     }
 
     /// <summary>
