@@ -13,7 +13,7 @@ public class BoardController : MonoBehaviour
 
     GridXY<Token> _board;
     public static Action<MoveData> OnTokenDropped;
-    public static Action OnTokenFailedToDrop;
+    public static Action<Token> OnTokenFailedToDrop;
     public static Action<Token> OnTurnStarted;
 
     Cursor _cursor;
@@ -32,20 +32,19 @@ public class BoardController : MonoBehaviour
         //lets subcribers know that first turn started 
         OnTurnStarted?.Invoke(currentPlayer);
 
-        
-
-
     }
     private void OnEnable()
     {
         _cursor.OnClicked += DropToken;
         OnTokenDropped += SpawnToken;
+        PlayerAIRandom.OnAITokenDrop += DropToken;
         
     }
     private void OnDisable()
     {
         _cursor.OnClicked -= DropToken;
         OnTokenDropped -= SpawnToken;
+        PlayerAIRandom.OnAITokenDrop -= DropToken;
     }
 
     void DropToken(Vector2Int coords)
@@ -79,7 +78,7 @@ public class BoardController : MonoBehaviour
         }
         //will spawn sound feedback here or smth
         Debug.Log("Token not dropped.");
-        OnTokenFailedToDrop?.Invoke();
+        OnTokenFailedToDrop?.Invoke(currentPlayer);
     }
     
     /// <summary>
