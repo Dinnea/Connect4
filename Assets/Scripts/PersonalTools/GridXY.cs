@@ -8,7 +8,8 @@ using Personal.Utilities;
 namespace Personal.GridFramework
 {
     /// <summary>
-    /// 2D grid placed on XY coordinates
+    /// 2D grid placed on XY coordinates.
+    /// Based on Code Monkey tutorials
     /// </summary>
     /// <typeparam name="TObject"> Object contained in the grid cells</typeparam>
     //TO DO: instead of remaking the entire class for every grid (XY, XZ, YZ),

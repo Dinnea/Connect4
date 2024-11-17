@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Reacts to events by playing sound effects
+/// </summary>
 public class SFXManager : MonoBehaviour
 {
     [SerializeField] AudioSource _onDropSFX;
