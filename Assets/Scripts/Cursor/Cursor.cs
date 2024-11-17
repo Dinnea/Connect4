@@ -11,7 +11,7 @@ public class Cursor : MonoBehaviour
 {
     [SerializeField] LayerMask layer;
 
-    public Action<Vector2Int> OnBoardClicked;
+    public Action<Vector2Int> OnClicked;
     [SerializeField] float _cursorDepth;
     [SerializeField] float _cursorBoardGap = 1.2f;
     Vector3 _cursorLocation;
@@ -49,7 +49,7 @@ public class Cursor : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0))
         {
-            OnBoardClicked?.Invoke(cellCoords);
+            OnClicked?.Invoke(cellCoords);
         }
     }
 

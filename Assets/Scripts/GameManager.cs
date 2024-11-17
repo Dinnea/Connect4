@@ -19,5 +19,15 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void StartScene(int sceneIndex)
+    {
+        SceneManager.LoadScene(sceneIndex);
+    }
+
+    public void StartMainMenu()
+    {
+        StartScene(0);
+    }
+
     public static KeyCode GetRestartKey() { return _restart; }
 }

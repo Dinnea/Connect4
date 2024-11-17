@@ -38,13 +38,13 @@ public class BoardController : MonoBehaviour
     }
     private void OnEnable()
     {
-        _cursor.OnBoardClicked += DropToken;
+        _cursor.OnClicked += DropToken;
         OnTokenDropped += SpawnToken;
         
     }
     private void OnDisable()
     {
-        _cursor.OnBoardClicked -= DropToken;
+        _cursor.OnClicked -= DropToken;
         OnTokenDropped -= SpawnToken;
     }
 
