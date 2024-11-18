@@ -40,7 +40,7 @@ public class PlayerAIRandom : MonoBehaviour
         }
     }
 
-    void PlayTokenNoDelay()
+    void PlayToken()
     {
         int columnToPlay = UnityEngine.Random.Range(0, _board.GetWidthInColumns());
         OnAITokenDrop?.Invoke(columnToPlay);
